@@ -4,7 +4,7 @@ import axios from 'axios'
 
 @Injectable()
 export class GraphApiService {
-    
+
     private baseApi: string
     private appId: string
     private appSecret: string
@@ -19,7 +19,7 @@ export class GraphApiService {
 
     async getUserProfile(userAccessToken: string) {
         try {
-            const response = await axios.get(`${this.baseApi}/me?fields=id,name,email`, {
+            const response = await axios.get(`${this.baseApi}/me?fields=id,name,email,picture`, {
                 params: {
                     access_token: userAccessToken
                 }
@@ -31,16 +31,12 @@ export class GraphApiService {
         }
     }
 
-    async getSenderProfile(userAccessToken: string, userId: number) {
+    async getSenderProfile(pageAccessToken: string, userId: string) {
         try {
-            const response = await axios.get(`${this.baseApi}/${userId}?fields=name`, {
-                params: {
-                    access_token: userAccessToken
-                }
-            })
+            const response = await axios.get(`${this.baseApi}/${userId}?fields=name,picture&access_token=${pageAccessToken}`)
 
             return response.data
-        } catch(e) {
+        } catch (e) {
             return e
         }
     }
@@ -86,7 +82,8 @@ export class GraphApiService {
 
     async subscribeWebhook(pageId: string, pageAccessToken: string) {
         try {
-            const response = await axios.post(`https://graph.facebook.com/${pageId}/subscribed_apps?subscribed_fields=feed&access_token=${pageAccessToken}`)
+            const subscribedApps = 'feed,messages,mention,inbox_labels,message_deliveries,message_echoes,message_reactions,message_reads,messaging_account_linking,messaging_optins,messaging_policy_enforcement,messaging_referrals'
+            const response = await axios.post(`https://graph.facebook.com/${pageId}/subscribed_apps?subscribed_fields=${subscribedApps}&access_token=${pageAccessToken}`)
 
             return response.data
         } catch (e) {
@@ -94,26 +91,31 @@ export class GraphApiService {
         }
     }
 
-    async sendMessage(from: string, to: string, platform: string, message: string, pageAccessToken: string) {
-        try {
-            const url = `${this.baseApi}/${from}/messages`
-            const response = await axios.post(url, {}, {
-                params: {
+    async sendMessage(to: string, platform: string, message: string, pageAccessToken: string) {
+        if (platform === 'facebook') {
+            try {
+                const url = `${this.baseApi}/me/messages?access_token=${pageAccessToken}`
+                const response = await axios.post(url, JSON.stringify({
+                    messaging_tag: "MESSAGE_TAG",
+                    tag: "HUMAN_AGENT",
                     recipient: {
                         id: to
                     },
                     message: {
                         text: message
-                    },
-                    messaging_type: 'MESSAGE_TAG',
-                    tag: 'HUMAN_AGENT',
-                    access_token: pageAccessToken
-                }
-            })
-
-            return response.data
-        } catch (e) {
-            return e
+                    }
+                }), {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }                    
+                })
+    
+                return response.data
+            } catch (e) {
+                return e
+            }
+        } else if (platform === 'instagram') {
+            return 'Wakwaw'
         }
     }
 

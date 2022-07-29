@@ -8,15 +8,17 @@ export class ChatsService {
     @InjectRepository(MessageEntity)
     private readonly repository: Repository<MessageEntity>
 
-    async getMessages(subId: string) {
+    async getMessages(subId: string, dbRoomId: string) {
         this.repository.metadata.tablePath = `${subId}_messages`
 
         return await this.repository.find({
-            take: 10
+            where: {
+                dbRoomId
+            }
         })
     }
 
-    async saveMessages(subId: string, data: MessageEntity) {
+    async saveMessages(subId: string, data: any) {
         this.repository.metadata.tablePath = `${subId}_messages`
 
         const message = this.repository.create(data)

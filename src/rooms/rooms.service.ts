@@ -11,16 +11,11 @@ export class RoomsService {
 
     async getRoom(subId: string, instanceId: string, senderId: string) {
         this.repository.metadata.tablePath = `${subId}_rooms`
-
-        const rooms = await
-            this.repository.find({
-                where: {
-                    roomId: `${instanceId}-${senderId}`
-                }
-            })
-        
-        console.log(senderId, 'IEU BAGONG')
-
+        const rooms = await this.repository.findOne({
+            where: {
+                roomId: `${instanceId}-${senderId}`
+            }
+        })
         return rooms
     }
 
@@ -29,21 +24,19 @@ export class RoomsService {
         data: any
     ) {
         this.repository.metadata.tablePath = `${subId}_rooms`
-
-        const room = this.repository.create(data)
-        return await this.repository.insert(room)
+        return await this.repository.save(data)
     }
 
     async updateRoom(
-        subId: string, 
-        instanceId: string, 
-        data: any) {
+        subId: string,
+        instanceId: string,
+        data: any
+    ) {
         this.repository.metadata.tablePath = `${subId.toLowerCase()}_rooms`
-
-        const room = this.repository.createQueryBuilder()
-                                    .update(RoomEntity)
-                                    .set(data).where('instance_id = :id', { id: instanceId })
-                                    .execute()
+        const room = await this.repository.createQueryBuilder()
+            .update(RoomEntity)
+            .set(data).where('instance_id = :id', { id: instanceId })
+            .execute()
         return room
     }
 

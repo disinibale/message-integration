@@ -27,6 +27,9 @@ export class FacebookSubscription {
     @Column({ type: 'varchar', length: 255, nullable: true })
     public ownerName: string
 
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    public pagePicture: string
+
     @CreateDateColumn({ type: 'timestamp' })
     public createdAt: Date
 

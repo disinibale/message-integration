@@ -11,9 +11,9 @@ export class ChatsController {
 
     @Get()
     getMessages(
-        @Query() query: { subId: string }
+        @Query() query: { subId: string, dbRoomId: string }
     ) {
-        return this.service.getMessages(query.subId)
+        return this.service.getMessages(query.subId, query.dbRoomId)
     }
 
     @Post()

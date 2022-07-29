@@ -27,13 +27,6 @@ export class WebhookController {
         return this.webhookService.post(body)
     }
 
-    @Post('subscribe') // localhost:5000/webhook/subscribe
-    subscribeToWebhook(
-        @Query() query: { pageId: string, pageAccessToken: string }
-    ) {
-        return this.webhookService.subscribePage(query.pageId, query.pageAccessToken)
-    }
-
     @Post('register')
     registerFacebook(
         @Query() query: {
@@ -52,22 +45,40 @@ export class WebhookController {
         return this.webhookService.register(query, body)
     }
 
-    @Get('test')
+    @Post('test')
     testing(
-        @Query() query: {
-            userAccessToken: string,
-            userId: string
+        @Body() body: {
+            senderId: string,
+            senderName: string,
+            senderAvatar: string,
+            recipientId: string,
+            recipientName: string,
+            recipientAvatar: string,
+            profilePicture: string,
+            instanceId: string,
+            subId: string,
+            messageId: string,
+            messageTimestamp: string,
+            messageContent: string,
+            channel: string
         }
     ) {
-        return this.webhookService.testing(query.userAccessToken, query.userId)
+        // return this.webhookService.insertData(body)
+        console.log(body)
+    }
+
+    @Get('user-profile')
+    users(
+        @Query() query: { pageAccessToken: string, userId: string }) {
+        return this.webhookService.testing(query)
     }
 
     @Post('send-message')
     send(
-        @Body() body: { from: string, to: string, platform: string, message: string, pageAccessToken: string, subId: string, instanceId: string },
+        @Body() body: { to: string, platform: string, message: string, pageAccessToken: string },
         @Query() query: { instanceId: string, subId: string }
     ) {
-        return this.webhookService.sendMessage(body, query)
+        return this.webhookService.handleSendMessage(body, query)
     }
 
 }
