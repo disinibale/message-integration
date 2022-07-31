@@ -12,12 +12,9 @@ import { RoomsModule } from './rooms/rooms.module';
 import { ChatsModule } from './chats/chats.module';
 import { InstagramModule } from './instagram/instagram.module';
 
-const envFilePath: string = getEnvPath(`${__dirname}/common/envs`)
-
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath,
       isGlobal: true,
       expandVariables: true
     }),

@@ -1,6 +1,8 @@
-FROM node:18
+FROM node:18-alpine 
 
 WORKDIR /usr/src/app
+
+COPY --chown=node:node . .
 
 COPY package*.json ./
 
@@ -10,4 +12,6 @@ COPY . .
 
 RUN yarn build
 
-CMD ['node', 'dist/main.js']
+EXPOSE  5000/tcp
+
+CMD ["node", "dist/main.js"]
